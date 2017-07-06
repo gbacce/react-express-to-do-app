@@ -42,27 +42,25 @@ router.get('/getTasks', function(req, res, next) {
     if (error) throw error;
     res.json(results);
   })
-  
-  // res.json({
-  //   students: [
-  //     'Marissa',
-  //     'Merilee',
-  //     'Chris',
-  //     'Stephen',
-  //     'Chad',
-  //     'Shane'
-  //   ]
-  // })
-
 });
 
 
-  // The addStudent route:
+router.get('/getTask/:id', (req,res)=>{
+  connection.query(`SELECT * FROM tasks WHERE id=${req.params.id}`, (error, results)=>{
+    if(results.length == 0) {
+      res.json({msg:"No result"})
+    } else {
+    res.json(results[0])
+    }
+  })
+})
+
+
+
+// The addStudent route:
      // Expects a name in the body. 
      // It will add that name to the students table inside the to do database in SQL.
      // Then, it will respond with all stdents in that table.
-
-
 
 //The first query inserts the student name into the database.
 //The second query returns the updated full list of students from the database.
@@ -91,6 +89,30 @@ router.post('/addTask', (req, res)=>{
    })
   })
 });
+
+
+router.post('/deleteTask', (req,res)=>{
+  connection.query(`DELETE FROM tasks WHERE id=${req.body.taskId}`, (error, results)=>{
+    if(error) throw error;
+    res.json({
+      msg: "success"
+    })
+  })
+})
+
+
+router.post('/editTask', (req,res)=>{
+  var editedTask = req.body.task
+  var editedTaskDate = req.body.date
+  var taskId = req.body.taskId
+  connection.query(`UPDATE tasks SET task_name="${req.body.task}", task_date="${req.body.date}" WHERE id=${req.body.taskId}`, (error, results)=>{
+    if(error) throw error;
+    res.json({
+      msg: "success"
+    })
+  })
+})
+
 
 
 module.exports = router;

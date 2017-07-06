@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import $ from 'jquery';
-
+import { Link } from 'react-router-dom';
 
 class Home extends Component {
   constructor(props) {
@@ -21,7 +21,6 @@ class Home extends Component {
 
   addNewTask(event){
     event.preventDefault();
-
     var taskToAdd = document.getElementById('newTask').value;
     var taskDateToAdd = document.getElementById('newTaskDate').value;
    
@@ -30,7 +29,7 @@ class Home extends Component {
       url: "http://localhost:3000/addTask",
       data: {
               task: taskToAdd,
-              date: taskDateToAdd
+              date: taskDateToAdd,
             }
     }).done((taskArray)=>{
       this.setState({
@@ -44,8 +43,13 @@ class Home extends Component {
 
     var theTaskArray = [];
 
-    this.state.theList.map((taskObject)=>{
-      theTaskArray.push(<div key={taskObject.id}>{taskObject.task_name} {taskObject.task_date}</div>);
+    this.state.theList.map((taskObject, index)=>{
+      theTaskArray.push(
+        <div key={taskObject.id}>
+          <p>{taskObject.task_name} scheduled on {taskObject.task_date}</p>
+          <Link to={`/task/delete/${taskObject.id}`}>Delete</Link> |
+          <Link to={`/task/edit/${taskObject.id}`}>Edit</Link>
+        </div>);
     });
 
     return(
