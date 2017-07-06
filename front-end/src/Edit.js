@@ -26,6 +26,7 @@ class Edit extends Component {
 
 
   updateTask(event) {
+    event.preventDefault();
     var taskToEdit = document.getElementById('updatedTask').value;
     var taskDateToEdit = document.getElementById('updatedTaskDate').value;
     var taskId = this.props.match.params.taskId;
