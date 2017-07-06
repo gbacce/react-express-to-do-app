@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import logo from './logo.svg'
 import './App.css';
 import $ from 'jquery';
+import Home from './Home';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-class App extends Component {
+class ToDo extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      theClass: []
+      theList: []
     }
-    this.addStudent =this.addStudent.bind(this);
+    this.addTask = this.addTask.bind(this);
   }
 
 
@@ -18,23 +20,24 @@ class App extends Component {
   componentDidMount() {
 
     // Get JSON request to localhost:3000 ... this is where Express is listening.
-    $.getJSON('http://localhost:3000/getStudents', (studentsFromAPI)=>{
+    $.getJSON('http://localhost:3000/getTasks', (tasksFromAPI)=>{
 
     // Log the JSON response from Express
-      console.log(studentsFromAPI)
+      console.log(tasksFromAPI)
 
     // Update the state. This will trigger a re-render.
       this.setState({
-        theClass: studentsFromAPI
+        theList: tasksFromAPI
       })
 
     })
   }
 
-  addStudent(event){
+  addTask(event){
     // var studentToAdd = event.target.parentNode.childNodes[0].value;
     // var studentToAdd = $('#newStudent').value;
-    var studentToAdd = document.getElementById('newStudent').value;
+    var taskToAdd = document.getElementById('newTask').value;
+    var taskDateToAdd = document.getElementById('newTaskDate').value;
     // console.log(studentToAdd)
 
     ///// Once we have the studentToAdd, we want to send it to the database inside of SQL! /////
@@ -45,11 +48,14 @@ class App extends Component {
 
     $.ajax({
       method: "POST",
-      url: "http://localhost:3000/addStudent",
-      data: {name: studentToAdd}
-    }).done((studentsArray)=>{
+      url: "http://localhost:3000/addTask",
+      data: {
+              task: taskToAdd,
+              date: taskDateToAdd
+            }
+    }).done((taskArray)=>{
       this.setState({
-        theClass: studentsArray
+        theList: taskArray
       })
     })
 
@@ -59,31 +65,12 @@ class App extends Component {
 
   render() {
 
-    // Create an array to insert into return. It will contain components or HTML tags.
-    var theClassArray = [];
-
-    // Loop through state variable.
-    this.state.theClass.map((student, index)=>{
-      // Push an <li>tag onto array for each element in the state variable.
-      theClassArray.push(<li key={index}>{student.name}</li>);
-    });
-
-    return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <div className="add-box">
-          <input type='text' id='newStudent' />
-          <button onClick={this.addStudent}>Add Student</button>
-        </div>
-        <p>
-          {theClassArray}
-        </p>
-      </div>
-    );
+    return(
+      <Router>
+        <Route exact={true} path="/" component={Home} />
+      </Router>
+    )
   }
 }
 
-export default App;
+export default ToDo;
