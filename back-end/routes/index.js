@@ -17,6 +17,21 @@ connection.connect();
 // Set up a route to handle React's first request
 //    $.getJSON('http://localhost:3000/getStudents', (studentsFromAPI)=>{})
 
+
+function validateKey(key){
+  return new Promise((resolve,reject)=>{
+    connection.query('SELECT * FROM api_keys WHERE api_key = ?', [key], (error, results)=>{
+      if (error) throw error;
+      if(results.length == 0){
+        resolve(false);
+      } else {
+        resolve(true);
+      }
+    })
+  }) 
+}
+
+
 router.get('/getStudents', function(req, res, next) {
   connection.query('SELECT * FROM students', (error, results)=>{
     if (error) throw error;
@@ -38,9 +53,16 @@ router.get('/getStudents', function(req, res, next) {
 
 
 router.get('/getTasks', function(req, res, next) {
-  connection.query('SELECT * FROM tasks', (error, results)=>{
-    if (error) throw error;
-    res.json(results);
+  var isKeyValid = validateKey(req.query.apiKey)
+  isKeyValid.then((bool)=>{
+    if(bool == true){
+      connection.query('SELECT * FROM tasks', (error, results)=>{
+        if (error) throw error;
+        res.json(results);
+      })
+    }else{
+      res.json({msg:"badKey"})
+    }
   })
 });
 
@@ -53,7 +75,7 @@ router.get('/getTask/:id', (req,res)=>{
     res.json(results[0])
     }
   })
-})
+});
 
 
 
